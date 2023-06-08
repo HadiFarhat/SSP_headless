@@ -1,8 +1,8 @@
 import Head from "next/head";
 import { useEffect } from "react";
 import { faker } from "@faker-js/faker";
-import ProductCard from "../components/ProductCard.js";
-import Header from "../components/Header.js";
+import ProductCard from "../components/productCard.js";
+import Header from "../components/header.js";
 import { CartProvider } from "../context/CartContext.js";
 
 
