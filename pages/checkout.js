@@ -32,11 +32,16 @@ const Checkout = () => {
       }
     };
 
+    const handleLoad = () => {
+      resizeIframe();
+    };
+
     window.addEventListener('resize', resizeIframe);
-    resizeIframe();
+    window.addEventListener('load', handleLoad);
 
     return () => {
       window.removeEventListener('resize', resizeIframe);
+      window.removeEventListener('load', handleLoad);
     };
   }, []);
 
@@ -59,7 +64,7 @@ const Checkout = () => {
             ref={iframeRef}
             title="Checkout iframe"
             src={iframeSrc}
-            style={{ width: "100%", border: "none" }}
+            style={{ width: "100%", height: "100%", border: "none" }}
           />
         </CardContent>
       </Card>
