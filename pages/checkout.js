@@ -41,7 +41,7 @@ const Checkout = () => {
           <iframe
             title="Checkout iframe"
             src={iframeSrc}  // Updated iframe src
-            style={{ width: "100%", height: "100%", border: "none" }}
+            style={{ width: "100%", height: "1000vh", border: "none" }}
           />
         </CardContent>
       </Card>
