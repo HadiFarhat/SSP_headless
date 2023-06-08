@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import { Box, Typography, Card, CardContent } from "@mui/material";
 import Header from "../components/header.js";
 import { CartContext, CartProvider } from "../context/CartContext.js";
@@ -7,6 +7,7 @@ const Checkout = () => {
   const { storefrontCart } = useContext(CartContext);
   const [companyname, setCompanyName] = useState('');
   const [iframeSrc, setIframeSrc] = useState('');
+  const iframeRef = useRef(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -22,6 +23,22 @@ const Checkout = () => {
 
     fetchStorefrontCart();
   }, [storefrontCart]);
+
+  useEffect(() => {
+    const resizeIframe = () => {
+      const iframe = iframeRef.current;
+      if (iframe) {
+        iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+      }
+    };
+
+    window.addEventListener('resize', resizeIframe);
+    resizeIframe();
+
+    return () => {
+      window.removeEventListener('resize', resizeIframe);
+    };
+  }, []);
 
   return (
     <Box
@@ -39,9 +56,10 @@ const Checkout = () => {
       <Card variant="outlined" sx={{ backgroundColor: "#fafafa" }}>
         <CardContent>
           <iframe
+            ref={iframeRef}
             title="Checkout iframe"
-            src={iframeSrc}  // Updated iframe src
-            style={{ width: "100%", height: "1000vh", border: "none" }}
+            src={iframeSrc}
+            style={{ width: "100%", border: "none" }}
           />
         </CardContent>
       </Card>
