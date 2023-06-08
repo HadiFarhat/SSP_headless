@@ -64,7 +64,7 @@ const Checkout = () => {
             ref={iframeRef}
             title="Checkout iframe"
             src={iframeSrc}
-            style={{ width: "100%", height: "1000px", border: "none" }}
+            style={{ width: "100%", height: "1200px", border: "none" }}
           />
         </CardContent>
       </Card>

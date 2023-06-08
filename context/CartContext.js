@@ -105,18 +105,24 @@ export const CartProvider = ({ children }) => {
     const cartId = Cookies.get("cartId");
     if (cartId) {
       console.log(cartId)
-      const { data } = await axios.get(`${API_ENDPOINT}/getcart`, {
+      const response = await axios.get(`${API_ENDPOINT}/getcart`, {
         params: {
           id: cartId
         }
       });
-      if (data) {
-        const updatedCart = JSON.parse(data.message).data.line_items
-          .custom_items;
-        setCart(updatedCart);
+      if (response) {
+        const { data } = response;
+        if (data.message.status === 400) {
+          // If status is 400 and cartId cookie is present, remove the cartId cookie
+          Cookies.remove("cartId");
+        } else {
+          const updatedCart = JSON.parse(data.message).data.line_items.custom_items;
+          setCart(updatedCart);
+        }
       }
     }
   };
+  
 
   const storefrontCart = async () => {
     const cartId = Cookies.get("cartId");
