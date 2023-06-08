@@ -112,7 +112,7 @@ export const CartProvider = ({ children }) => {
       });
       if (response) {
         const { data } = response;
-        if (data.message.status === 400) {
+        if (JSON.parse(data.status) === 400) {
           // If status is 400 and cartId cookie is present, remove the cartId cookie
           Cookies.remove("cartId");
         } else {
