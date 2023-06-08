@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { Box, Typography, Card, CardContent } from "@mui/material";
-import Header from "../components/Header";
-import { CartContext, CartProvider } from "../context/CartContext";
+import Header from "../components/Header.js";
+import { CartContext, CartProvider } from "../context/CartContext.js";
 
 const Checkout = () => {
   const { storefrontCart } = useContext(CartContext);

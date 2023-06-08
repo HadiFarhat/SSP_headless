@@ -1,9 +1,9 @@
 import Head from "next/head";
 import { useEffect } from "react";
 import { faker } from "@faker-js/faker";
-import ProductCard from "../components/ProductCard";
-import Header from "../components/Header";
-import { CartProvider } from "../context/CartContext";
+import ProductCard from "../components/ProductCard.js";
+import Header from "../components/Header.js";
+import { CartProvider } from "../context/CartContext.js";
 
 
 export async function getServerSideProps() {
