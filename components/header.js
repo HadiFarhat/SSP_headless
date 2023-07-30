@@ -9,10 +9,15 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Cart from "./cart";
 import { CartContext } from "../context/CartContext";
+import { CustomerContext } from '../context/CustomerContext';
 import Link from 'next/link';
+import UserMenu from './UserMenu'; // import the UserMenu component
 
 const Header = (props) => {
   const { cart } = useContext(CartContext);
+  const { fetchCustomerCategories } = useContext(CustomerContext);
+
+
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -40,6 +45,7 @@ const Header = (props) => {
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
+        <UserMenu fetchCustomerCategories={fetchCustomerCategories} />
         <Modal open={open} onClose={handleClose}>
           <Box
             sx={{

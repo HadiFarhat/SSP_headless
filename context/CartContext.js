@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const API_ENDPOINT = "https://carts-middleware.vercel.app";
+const API_ENDPOINT = "https://ssp-middleware.vercel.app";
 //const API_ENDPOINT = "http://localhost:8080";
 
 export const CartContext = createContext();
@@ -10,18 +10,44 @@ export const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [currentProduct, setCurrentProduct] = useState(null);
+  let isMasterProduct = true;
 
   const createCart = async (product) => {
-    const { data } = await axios.post(`${API_ENDPOINT}/createcart`, {
-      custom_items: [
+    const customerCookie = Cookies.get("customer");
+    let customer = null;
+
+    if (customerCookie) {
+      customer = JSON.parse(customerCookie);
+    }
+
+    let productdata = JSON.parse(product);
+    if (productdata.ventityId) {
+      isMasterProduct = false;
+    }
+    let lineitems;
+    if (isMasterProduct) {
+      lineitems = [
         {
-          name: product.name,
-          sku: product.sku,
-          list_price: parseFloat(product.price),
           quantity: 1,
+          product_id: productdata.entityId,
         },
-      ],
+      ];
+    } else {
+      lineitems = [
+        {
+          quantity: 1,
+          product_id: productdata.entityId,
+          variant_id: productdata.ventityId,
+        },
+      ];
+    }
+    if (customer) {
+      lineitems[0]["customer"] = customer.entityId;
+    }
+    const { data } = await axios.post(`${API_ENDPOINT}/createcart`, {
+      line_items: lineitems,
     });
+    console.log(data.message);
     var cartdata = JSON.parse(data.message).data;
     const cartId = cartdata.id;
     Cookies.set("cartId", cartId, { expires: 7 });
@@ -29,13 +55,40 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToExistingCart = async (product) => {
+    const customerCookie = Cookies.get("customer");
+    let customer = null;
+
+    if (customerCookie) {
+      customer = JSON.parse(customerCookie);
+    }
+    let productdata = JSON.parse(product);
+    if (productdata.ventityId) {
+      isMasterProduct = false;
+    }
+    let lineitems;
+    if (isMasterProduct) {
+      lineitems = [
+        {
+          quantity: 1,
+          product_id: productdata.entityId,
+        },
+      ];
+    } else {
+      lineitems = [
+        {
+          quantity: 1,
+          product_id: productdata.entityId,
+          variant_id: productdata.ventityId,
+        },
+      ];
+    }
+    if (customer) {
+      lineitems[0]["customer"] = customer.entityId;
+    }
     const cartId = Cookies.get("cartId");
     const { data } = await axios.post(`${API_ENDPOINT}/addtocart`, {
       id: cartId,
-      name: product.name,
-      sku: product.sku,
-      list_price: parseFloat(product.price),
-      quantity: 1,
+      line_items: lineitems,
     });
     console.log(JSON.stringify(data.message));
     Cookies.set("cartId", JSON.parse(data.message).data.id, { expires: 7 });
@@ -45,9 +98,9 @@ export const CartProvider = ({ children }) => {
   const addToCart = (product) => {
     let cartId = Cookies.get("cartId");
     if (!cartId) {
-      setCurrentProduct({ product, action: createCart });
+      setCurrentProduct({ product: product, action: createCart });
     } else {
-      setCurrentProduct({ product, action: addToExistingCart });
+      setCurrentProduct({ product: product, action: addToExistingCart });
     }
   };
 
@@ -56,7 +109,7 @@ export const CartProvider = ({ children }) => {
       (async () => {
         const data = await currentProduct.action(currentProduct.product);
         const updatedCart = JSON.parse(data.message).data.line_items
-          .custom_items;
+          .physical_items;
         setCart(updatedCart);
         console.log(cart);
       })();
@@ -86,7 +139,7 @@ export const CartProvider = ({ children }) => {
         item: findItemById(cart, sku),
         quantity: quantity,
       });
-      setCart(JSON.parse(data.message).data.line_items.custom_items);
+      setCart(JSON.parse(data.message).data.line_items.physical_items);
     } else {
       removeFromCart(product);
     }
@@ -104,11 +157,11 @@ export const CartProvider = ({ children }) => {
   const loadCart = async () => {
     const cartId = Cookies.get("cartId");
     if (cartId) {
-      console.log(cartId)
+      //console.log(cartId)
       const response = await axios.get(`${API_ENDPOINT}/getcart`, {
         params: {
-          id: cartId
-        }
+          id: cartId,
+        },
       });
       if (response) {
         const { data } = response;
@@ -116,27 +169,33 @@ export const CartProvider = ({ children }) => {
           // If status is 400 and cartId cookie is present, remove the cartId cookie
           Cookies.remove("cartId");
         } else {
-          const updatedCart = JSON.parse(data.message).data.line_items.custom_items;
+          const updatedCart = JSON.parse(data.message).data.line_items
+            .physical_items;
           setCart(updatedCart);
         }
       }
     }
   };
-  
 
   const storefrontCart = async () => {
     const cartId = Cookies.get("cartId");
+    const customerCookie = Cookies.get("customer");
+    let customer = 0;
+
+    if (customerCookie) {
+      customer = JSON.parse(customerCookie).entityId;
+    }
     if (cartId) {
-      console.log(cartId)
+      console.log(cartId);
       const { data } = await axios.get(`${API_ENDPOINT}/getstorefrontcart`, {
         params: {
-          id: cartId
-        }
+          id: cartId,
+          customerId:customer
+        },
       });
       if (data) {
         //console.log(data)
-        return JSON.parse(data.message).data.embedded_checkout_url
-        //return "https://www.google.com"
+        return data.message;
       }
     }
   };
@@ -148,7 +207,14 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, updateCart, loadCart, storefrontCart, }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        updateCart,
+        loadCart,
+        storefrontCart,
+      }}
     >
       {children}
     </CartContext.Provider>

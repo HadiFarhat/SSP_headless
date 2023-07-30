@@ -1,57 +1,45 @@
 import Head from "next/head";
-import { useEffect } from "react";
-import { faker } from "@faker-js/faker";
-import ProductCard from "../components/productCard.js";
+import { useEffect, useContext } from "react";
 import Header from "../components/header.js";
 import { CartProvider } from "../context/CartContext.js";
+import CategoryCard from "../components/categoryCard";
+import { CustomerContext } from "../context/CustomerContext.js";
 
+export default function Home() {
+  const { customer, setCustomer, fetchCustomerCategories, customerCategories } =
+    useContext(CustomerContext);
+  const companyname = "E-commerce Store";
 
-export async function getServerSideProps() {
-  const num = 200;
-  const items = 10;
-  const companyname = faker.company.name() + "s E-commerce Store";
+  const key = customer ? customer.entityId : "initial";
 
-  const products = Array(num)
-    .fill()
-    .map(() => ({
-      name: faker.commerce.productName(),
-      price: faker.commerce.price(),
-      adjective: faker.commerce.productAdjective(),
-      material: faker.commerce.productMaterial(),
-      description: faker.commerce.productDescription(),
-      sku: faker.random.alphaNumeric(15),
-    }));
-
-    
-  return { props: { products, companyname, items } };
-}
-
-export default function Home({ products, companyname }) {
+  const handleUserChange = (newCustomer) => {
+    setCustomer(newCustomer);
+  };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('companyname', companyname);
-    }
-  }, [companyname]);
+    fetchCustomerCategories(customer);
+  }, [customer]);
 
   return (
-    <div className="container">
+    <div className="container" key={key}>
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div style={{ height: "5px" }}></div> {/* Vertical spacer */}
-        <CartProvider>
-          <Header name={companyname}/>
-          <div style={{ height: "40px" }}></div> {/* Vertical spacer */}
-          <main className="row">
-            {products.map((product, index) => (
-              <div className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" key={index}>
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </main>
-        </CartProvider>
+
+      <div style={{ height: "5px" }}></div>
+
+      <CartProvider>
+        <Header name={companyname} onUserChange={handleUserChange} />
+
+        <div style={{ height: "40px" }}></div>
+
+        <main className="row">
+          {customerCategories.map((category, index) => (
+            <CategoryCard category={category} key={index} />
+          ))}
+        </main>
+      </CartProvider>
     </div>
   );
 }

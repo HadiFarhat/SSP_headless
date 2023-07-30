@@ -1,14 +1,16 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
-import '../styles/globals.css'
-import PropTypes from 'prop-types';
+import { CustomerProvider } from "../context/CustomerContext.js";
+import { CartProvider } from "../context/CartContext.js";
+import 'bootstrap/dist/css/bootstrap.min.css';
+//import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return (
+    <CustomerProvider>
+      <CartProvider>
+        <Component {...pageProps} />
+      </CartProvider>
+    </CustomerProvider>
+  );
 }
 
-MyApp.propTypes = {
-  Component: PropTypes.elementType.isRequired,
-  pageProps: PropTypes.object.isRequired,
-}
-
-export default MyApp
+export default MyApp;
