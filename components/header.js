@@ -11,7 +11,7 @@ import Cart from "./cart";
 import { CartContext } from "../context/CartContext";
 import { CustomerContext } from '../context/CustomerContext';
 import Link from 'next/link';
-import UserMenu from './UserMenu'; // import the UserMenu component
+import UserMenu from './userMenu'; // import the UserMenu component
 
 const Header = (props) => {
   const { cart } = useContext(CartContext);

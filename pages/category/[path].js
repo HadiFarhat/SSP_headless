@@ -1,4 +1,4 @@
-import ProductCard from '../../components/ProductCard';
+import ProductCard from '../../components/productCard';
 import { useState, useEffect } from "react";
 import Filters from "../../components/filters";
 import Header from "../../components/header.js";
