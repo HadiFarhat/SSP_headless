@@ -1,4 +1,4 @@
-import ProductCard from '../../components/ProductCard';
+import ProductCard from '../../components/productCard';
 import Header from "../../components/header.js";
 import Filters from "../../components/filters"; 
 import { CartProvider } from "../../context/CartContext.js";

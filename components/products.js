@@ -1,6 +1,6 @@
 // Products.js
 import { useEffect, useState } from 'react';
-import ProductCard from './ProductCard';
+import ProductCard from './productCard';
 
 export default function Products({ selectedAttributes }) {
   const [products, setProducts] = useState([]);
