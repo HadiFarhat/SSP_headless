@@ -11,12 +11,11 @@ import Cart from "./cart";
 import { CartContext } from "../context/CartContext";
 import { CustomerContext } from '../context/CustomerContext';
 import Link from 'next/link';
-import UserMenu from './userMenu'; // import the UserMenu component
+import UserMenu from './userMenu'; 
 
 const Header = (props) => {
   const { cart } = useContext(CartContext);
   const { fetchCustomerCategories } = useContext(CustomerContext);
-
 
   const [open, setOpen] = useState(false);
 
@@ -28,24 +27,25 @@ const Header = (props) => {
     setOpen(false);
   };
 
-  // calculate total number of items in cart
   const totalItemsInCart = cart.reduce(
     (total, product) => total + product.quantity,
     0
   );
 
   return (
-    <AppBar position="static" style={{ borderRadius: "15px" }}>
+    <AppBar position="static" style={{ padding: "10px" }}>
       <Toolbar style={{ justifyContent: "space-between" }}>
-      <Typography variant="h6" component={Link} href="/" sx={{ textDecoration: 'none', color: 'white' }}>
-  {props.name}
-</Typography>
-        <IconButton color="inherit" onClick={handleOpen}>
-          <Badge badgeContent={totalItemsInCart} color="secondary">
-            <ShoppingCartIcon />
-          </Badge>
-        </IconButton>
-        <UserMenu fetchCustomerCategories={fetchCustomerCategories} />
+        <Typography variant="h4" component={Link} href="/" sx={{ textDecoration: 'none', color: 'white' }}>
+          {props.name}
+        </Typography>
+        <div style={{ fontSize: '1.5rem' }}>
+          <IconButton color="inherit" onClick={handleOpen} style={{ fontSize: '2rem' }}>
+            <Badge badgeContent={totalItemsInCart} color="secondary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+          <UserMenu fetchCustomerCategories={fetchCustomerCategories} />
+        </div>
         <Modal open={open} onClose={handleClose}>
           <Box
             sx={{
@@ -65,6 +65,7 @@ const Header = (props) => {
       </Toolbar>
     </AppBar>
   );
+
 };
 
 export default Header;
